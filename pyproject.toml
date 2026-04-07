@@ -1,0 +1,109 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "openenv-my-env-v4"
+version = "1.0.0"
+description = "Restaurant Table Management – OpenEnv RL Environment (OpenEnv Hackathon × SCALER)"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+authors = [
+    { name = "OpenEnv Hackathon x SCALER" }
+]
+keywords = ["reinforcement-learning", "openenv", "restaurant", "fastapi", "rl-environment"]
+classifiers = [
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Framework :: FastAPI",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "openenv>=0.1.0",
+    "fastapi>=0.111.0",
+    "uvicorn[standard]>=0.30.1",
+    "pydantic>=2.7.1",
+    "requests>=2.32.3",
+    "openai>=1.30.1",
+    "pyyaml>=6.0.1",
+    "typing-extensions>=4.11.0",
+    "gradio>=4.37.2",
+    "httpx>=0.27.0",
+    "anyio>=4.4.0",
+    "starlette>=0.37.2",
+    "python-multipart>=0.0.9",
+    "python-dotenv>=1.0.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2.0",
+    "pytest-asyncio>=0.23.7",
+    "httpx>=0.27.0",
+    "black>=24.4.2",
+    "ruff>=0.4.7",
+    "mypy>=1.10.0",
+]
+
+[project.scripts]
+# MANDATORY: The validator specifically looks for 'server' pointing to your main function
+server = "server.app:main"
+
+[project.urls]
+Homepage   = "https://huggingface.co/spaces/openenv/restaurant-table-management"
+Repository = "https://github.com/openenv/my_env_v4"
+Issues     = "https://github.com/openenv/my_env_v4/issues"
+
+# ---------------------------------------------------------------------------
+# Tool configurations
+# ---------------------------------------------------------------------------
+
+[tool.hatch.build.targets.wheel]
+packages = ["server"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+# Ruff linter
+[tool.ruff]
+line-length    = 100
+target-version = "py311"
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]
+exclude = [".venv", "venv", "__pycache__", "dist", "build"]
+
+[tool.ruff.isort]
+known-first-party = ["server", "models"]
+
+# Black formatter
+[tool.black]
+line-length    = 100
+target-version = ["py311", "py312"]
+skip-string-normalization = false
+
+# Mypy type checker
+[tool.mypy]
+python_version         = "3.11"
+strict                 = false
+ignore_missing_imports = true
+exclude                = ["venv", ".venv", "dist"]
+
+# Pytest
+[tool.pytest.ini_options]
+testpaths    = ["tests"]
+asyncio_mode = "auto"
+log_cli      = true
+log_level    = "INFO"
+
+# Coverage
+[tool.coverage.run]
+source  = ["server", "models", "grader", "inference"]
+omit    = ["tests/*", "venv/*", ".venv/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false

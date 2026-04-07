@@ -1,0 +1,98 @@
+name: restaurant-table-management
+version: "1.0.0"
+description: >
+  A production-ready Reinforcement Learning environment simulating a restaurant
+  table management system. Agents must efficiently seat customers, manage
+  waiting queues, and maximize revenue and satisfaction across peak and
+  off-peak periods.
+author: OpenEnv Hackathon x SCALER
+license: MIT
+
+environment:
+  type: discrete
+  observation_space:
+    type: dict
+    fields:
+      tables:
+        type: list
+        description: List of tables with size, status, and time_seated
+      waiting_queue:
+        type: list
+        description: Customers waiting with party_size and patience_remaining
+      time_step:
+        type: integer
+        description: Current simulation time step
+      occupancy_rate:
+        type: float
+        description: Fraction of tables currently occupied
+      total_seated:
+        type: integer
+        description: Total customers seated in episode
+      total_rejected:
+        type: integer
+        description: Total customers rejected or walked out
+  action_space:
+    type: discrete
+    actions:
+      - assign_table    # Seat next customer in queue at best available table
+      - reject_customer # Remove first customer from queue (penalty)
+      - delay_seating   # Wait one step (small penalty)
+      - combine_tables  # Combine two adjacent small tables for large party
+
+reward:
+  description: >
+    Shaped reward balancing revenue (customers seated), efficiency (table
+    utilization), speed (low wait times), and penalties for walk-offs and
+    idle tables.
+  range: [-10.0, +15.0]
+
+tasks:
+  - id: easy
+    name: Small Restaurant - Low Traffic
+    description: 6 tables, low arrival rate, ample capacity
+    max_steps: 100
+    config:
+      num_tables: 6
+      table_sizes: [2, 2, 4, 4, 6, 8]
+      arrival_rate: 0.3
+      max_patience: 8
+      seed: 42
+
+  - id: medium
+    name: Moderate Traffic - Mixed Tables
+    description: 10 tables, moderate arrival rate, mixed party sizes
+    max_steps: 150
+    config:
+      num_tables: 10
+      table_sizes: [2, 2, 2, 4, 4, 4, 6, 6, 8, 10]
+      arrival_rate: 0.55
+      max_patience: 5
+      seed: 123
+
+  - id: hard
+    name: Peak Hours - High Randomness
+    description: 14 tables, high arrival rate, tight patience, complex decisions
+    max_steps: 200
+    config:
+      num_tables: 14
+      table_sizes: [2, 2, 2, 2, 4, 4, 4, 4, 6, 6, 6, 8, 8, 10]
+      arrival_rate: 0.8
+      max_patience: 3
+      seed: 999
+
+api:
+  endpoints:
+    - POST /reset
+    - POST /step
+    - GET  /state
+  port: 8000
+  health_check: GET /health
+
+logging:
+  format: "[{level}] {message}"
+  tags: [START, STEP, END]
+
+constraints:
+  max_runtime_minutes: 20
+  max_vcpu: 2
+  max_ram_gb: 8
