@@ -71,11 +71,11 @@ cd my_env_v4-main
 pip install -r requirements.txt
 
 # 2. Start the server
-uvicorn server.app:app --host 0.0.0.0 --port 8000 --reload
+uvicorn server.app:app --host 0.0.0.0 --port 7860 --reload
 
 # 3. Run inference (in another terminal)
-export API_BASE_URL=http://localhost:8000
-export MODEL_NAME=claude-sonnet-4-20250514
+export API_BASE_URL=http://localhost:7860
+export MODEL_NAME=Qwen/Qwen2.5-7B-Instruct
 export HF_TOKEN=your_token_here
 python inference.py --task easy --seed 42
 
@@ -89,13 +89,13 @@ python grader.py --task all --runs 1
 docker build -t restaurant-env .
 
 # Run
-docker run -p 8000:8000 \
-  -e MODEL_NAME=claude-sonnet-4-20250514 \
+docker run -p 7860:7860 \
+  -e MODEL_NAME=Qwen/Qwen2.5-7B-Instruct \
   -e HF_TOKEN=your_token \
   restaurant-env
 
 # Test health
-curl http://localhost:8000/health
+curl http://localhost:7860/health
 ```
 
 ---
@@ -178,9 +178,7 @@ my_env_v4-main/
 |---|---|---|
 | `API_BASE_URL` | Yes | Running server URL |
 | `MODEL_NAME` | Yes | LLM model name |
-| `HF_TOKEN` | Yes (HF Spaces) | Hugging Face token |
-| `OPENAI_API_KEY` | Yes | API key for LLM calls |
-| `OPENAI_BASE_URL` | Optional | Override LLM endpoint |
+| `HF_TOKEN` | Yes | Hugging Face token |
 
 ---
 
